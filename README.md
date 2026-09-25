@@ -25,10 +25,9 @@ erDiagram
     CATEGORIES ||--o{ RECIPES : groups
     RECIPES ||--o{ RECIPE_INGREDIENTS : contains
     INGREDIENTS ||--o{ RECIPE_INGREDIENTS : referenced_by
-    UNITS ||--o{ INGREDIENTS : describes
 ```
 
-The schema uses cascading deletion for outlet-owned categories and recipe rows, while ingredient references are restricted so a shared ingredient cannot be removed while recipes still depend on it. That distinction protects the reusable ingredient library from accidental orphaning.
+The schema also provides unit lookup values, while recipe and ingredient unit fields remain textual in the current prototype. It uses cascading deletion for outlet-owned categories and recipe rows, while ingredient references are restricted so a shared ingredient cannot be removed while recipes still depend on it. That distinction protects the reusable ingredient library from accidental orphaning.
 
 ## Implemented Workflow
 
