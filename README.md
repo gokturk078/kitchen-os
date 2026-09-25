@@ -1,37 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kitchen OS
 
-## Getting Started
+Kitchen OS is a restaurant recipe and food-cost operations prototype built around structured outlets, ingredients, recipes, and exportable production records.
 
-First, run the development server:
+**Status:** Strong prototype. It is not presented as a production system.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## What It Models
+
+The application turns recipe work into connected operational data:
+
+- outlets and outlet-specific recipe categories
+- a shared ingredient library with units and unit costs
+- recipe master records, yields, preparation details, status, and selling price
+- recipe ingredients represented through a relational join model
+- allergen flags and form validation
+- outlet and global recipe views
+- PDF and Excel export workflows
+
+## Data Model
+
+```mermaid
+erDiagram
+    OUTLETS ||--o{ CATEGORIES : organizes
+    OUTLETS ||--o{ RECIPES : owns
+    CATEGORIES ||--o{ RECIPES : groups
+    RECIPES ||--o{ RECIPE_INGREDIENTS : contains
+    INGREDIENTS ||--o{ RECIPE_INGREDIENTS : referenced_by
+    UNITS ||--o{ INGREDIENTS : describes
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The schema uses cascading deletion for outlet-owned categories and recipe rows, while ingredient references are restricted so a shared ingredient cannot be removed while recipes still depend on it. That distinction protects the reusable ingredient library from accidental orphaning.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Implemented Workflow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create and manage an outlet.
+2. Maintain the shared ingredient catalog and cost values.
+3. Organize outlet recipes into categories.
+4. Build recipes from ingredient rows, yield data, preparation instructions, and allergens.
+5. Validate recipe input through typed schemas.
+6. Export operational recipe information to PDF or Excel.
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+```mermaid
+flowchart LR
+    U[Kitchen operator] --> N[Next.js and TypeScript interface]
+    N --> V[Form and schema validation]
+    V --> P[(Supabase PostgreSQL)]
+    P --> C[Recipe and food-cost views]
+    C --> E[PDF and Excel generators]
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Technology
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Next.js, React, TypeScript, Supabase/PostgreSQL, React Hook Form, Zod, jsPDF, jsPDF AutoTable, and SheetJS/XLSX.
 
-## Deploy on Vercel
+## Current Limitations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- The inspected public schema does not provide a complete authentication and Row Level Security model.
+- The repository does not contain a complete automated test suite.
+- No production deployment or production data is claimed.
+- Cost calculations depend on the accuracy and unit consistency of entered ingredient data.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# kitchen-os
+The prototype is useful evidence of relational modeling and operational workflow design, but authentication, authorization, test coverage, and deployment hardening would be required before production use.
+
+## Author
+
+Built by **Göktürk Kahriman**, Full-stack & AI Systems Developer.
